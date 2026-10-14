@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Campus Courier | TSP Route Planner</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><span>AIL / MINI PROJECT</span><span>LOCAL BEAM SEARCH + 2-OPT</span><span>ONE COURIER. ONE ROUND TRIP.</span></header>
+<main>
+<section class="intro"><h1>CAMPUS<br>COURIER<span class="dot">.</span></h1><div><p class="tag">ROUTE PLANNING / TSP</p><p>Pick up from every stop.<br>Return to dispatch.<br>Find a shorter way around.</p><p class="fine">A fictional campus on a coordinate grid.<br>Distances are straight-line metres, not road routes.</p></div></section>
+<section class="workspace">
+<aside class="controls">
+<h2>01 / SET THE STOPS</h2><p class="fine">First stop is dispatch. Coordinates: 0–1000 m.</p>
+<div class="toolbar"><button id="demo">Load campus</button><button id="clear">Clear stops</button></div>
+<form id="add-form"><label>Stop name<input id="name" maxlength="30" required placeholder="e.g. Design Lab"></label><div class="pair"><label>X / metres<input id="x" type="number" min="0" max="1000" required value="500"></label><label>Y / metres<input id="y" type="number" min="0" max="1000" required value="500"></label></div><button type="submit">+ Add stop</button></form>
+<ol id="stops" aria-label="Pickup stops"></ol>
+<h2>02 / SEARCH SETTINGS</h2><div class="pair"><label>Beam width<input id="beam" type="number" min="1" max="12" value="6"></label><label>Iteration limit<input id="iterations" type="number" min="1" max="150" value="60"></label></div><label>Random seed<input id="seed" type="number" min="0" max="999999" value="42"></label>
+<button class="primary" id="solve">PLAN ROUND TRIP →</button><p id="status" role="status" aria-live="polite">Load a campus or add 3–25 stops.</p>
+</aside>
+<div class="visual">
+<div class="panel-head"><h2>03 / ROUTE BOARD</h2><select id="route-view" aria-label="Displayed route"><option value="optimized">Optimized route</option><option value="beam">Beam search</option><option value="nearest">Nearest neighbor</option><option value="baseline">Input order</option></select></div>
+<svg id="map" viewBox="0 0 1080 780" role="img" aria-label="Campus stops and the selected round trip"></svg>
+<div class="legend"><span><b>■</b> DISPATCH</span><span>○ PICKUP</span><span class="red">— SELECTED TOUR</span></div>
+<div class="metrics"><div><span>TOUR DISTANCE</span><output id="distance">—</output><small>METRES / CLOSED TOUR</small></div><div><span>SAVED VS INPUT ORDER</span><output id="saving">—</output><small id="saving-note">RUN THE PLANNER</small></div><div><span>SEARCH TIME</span><output id="runtime">—</output><small>BEAM + 2-OPT / MILLISECONDS</small></div></div>
+</div></section>
+<section id="results" hidden><div class="panel-head"><h2>04 / COMPARE THE METHODS</h2><button id="export">Export result / JSON</button></div><div class="result-grid"><div><table><thead><tr><th>Method</th><th>Distance / m</th><th>Role</th></tr></thead><tbody id="comparison"></tbody></table><p id="verification" class="fine"></p><h3>VISIT ORDER</h3><p id="route-text"></p><h3>LEG DISTANCES</h3><ol id="legs"></ol></div><div><h3>BEAM SEARCH / BEST DISTANCE</h3><svg id="chart" viewBox="0 0 600 260" role="img" aria-label="Best tour distance by beam search iteration"></svg><p id="search-note" class="fine"></p><h3>HOW IT WORKS</h3><p>Local Beam Search keeps several candidate tours. Each round swaps pairs of stops and retains the shortest candidates. Then 2-opt reverses segments when that shortens the trip.</p><p class="fine">The seed makes the search repeatable. Larger beams explore more candidates, but can take longer. A heuristic route is not a proof of optimality.</p></div></div></section>
+<footer><span>CAMPUS COURIER / ARTIFICIAL INTELLIGENCE LABORATORY</span><span>PYTHON + HTML / NO API KEYS</span></footer>
+</main><script src="app.js"></script></body></html>
