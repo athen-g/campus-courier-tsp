@@ -6,18 +6,7 @@ from tsp import local_beam, two_opt
 from tour_utils import cost, distance_matrix, nearest_neighbor
 
 
-DEMO = [
-    {"name": "Dispatch", "x": 80, "y": 100},
-    {"name": "Library", "x": 240, "y": 90},
-    {"name": "Hostel A", "x": 850, "y": 140},
-    {"name": "Workshop", "x": 460, "y": 360},
-    {"name": "Canteen", "x": 160, "y": 560},
-    {"name": "Admin", "x": 580, "y": 110},
-    {"name": "Sports Hall", "x": 820, "y": 580},
-    {"name": "Lab Block", "x": 320, "y": 620},
-    {"name": "Hostel B", "x": 690, "y": 400},
-    {"name": "Medical", "x": 110, "y": 320},
-]
+from campus import DEMO, road_distances
 
 
 def validate(data):
@@ -64,7 +53,7 @@ def exact_tour(matrix):
 
 def solve(data):
     stops, params = validate(data)
-    matrix = distance_matrix(stops)
+    matrix, paths = road_distances(stops) if data.get("mode") == "campus" else (distance_matrix(stops), {})
     started = time.perf_counter()
     baseline = tuple(range(len(stops)))
     greedy = nearest_neighbor(matrix)
@@ -77,7 +66,7 @@ def solve(data):
     def record(route):
         return {"route": list(route) + [0], "distance": cost(route, matrix)}
     final_cost, base_cost = cost(final, matrix), cost(baseline, matrix)
-    return {"stops": stops, "parameters": params,
+    return {"stops": stops, "parameters": params, "road_paths": paths, "distance_model": "estimated campus roads" if paths else "Euclidean", "road_paths": paths, "distance_model": "estimated campus roads" if paths else "Euclidean",
             "baseline": record(baseline), "nearest": record(greedy),
             "beam": record(beam), "optimized": record(final),
             "history": history, "two_opt_history": moves,
@@ -92,4 +81,4 @@ def solve(data):
 
 if __name__ == "__main__":
     import json
-    print(json.dumps(solve({"stops": DEMO}), indent=2))
+    print(json.dumps(solve({"stops": DEMO, "mode": "campus"}), indent=2))

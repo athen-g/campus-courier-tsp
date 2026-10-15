@@ -349,3 +349,10 @@ footer{
 
 }
 
+
+#map { height:auto; aspect-ratio:1080/800; }
+
+#map {aspect-ratio:640/850; max-height:850px;}
+
+#map { aspect-ratio:1080/800; max-height:none; }
+#stop-choice, #add-stop {width:100%; margin-bottom:10px;}

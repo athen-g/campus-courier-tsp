@@ -1,0 +1,431 @@
+{
+  "nodes": {
+    "main_gate": [
+      480,
+      705
+    ],
+    "main_junction": [
+      480,
+      590
+    ],
+    "southwest": [
+      100,
+      590
+    ],
+    "southeast": [
+      600,
+      590
+    ],
+    "northwest": [
+      100,
+      175
+    ],
+    "northeast": [
+      600,
+      175
+    ],
+    "library_junction": [
+      260,
+      175
+    ],
+    "library_door": [
+      260,
+      203
+    ],
+    "canteen_junction": [
+      485,
+      175
+    ],
+    "canteen_door": [
+      485,
+      145
+    ],
+    "engineering_junction": [
+      100,
+      330
+    ],
+    "engineering_door": [
+      90,
+      330
+    ],
+    "admin_junction": [
+      100,
+      420
+    ],
+    "admin_turn": [
+      180,
+      420
+    ],
+    "admin_door": [
+      180,
+      460
+    ],
+    "science_junction": [
+      425,
+      590
+    ],
+    "science_door": [
+      425,
+      560
+    ],
+    "assembly_junction": [
+      520,
+      590
+    ],
+    "assembly_door": [
+      520,
+      552
+    ],
+    "arts_junction": [
+      600,
+      460
+    ],
+    "arts_door": [
+      595,
+      460
+    ],
+    "ness_junction": [
+      880,
+      175
+    ],
+    "ness_door": [
+      880,
+      160
+    ],
+    "west_gate": [
+      100,
+      655
+    ]
+  },
+  "edges": [
+    [
+      "main_gate",
+      "main_junction"
+    ],
+    [
+      "southwest",
+      "science_junction"
+    ],
+    [
+      "science_junction",
+      "main_junction"
+    ],
+    [
+      "main_junction",
+      "assembly_junction"
+    ],
+    [
+      "assembly_junction",
+      "southeast"
+    ],
+    [
+      "southwest",
+      "west_gate"
+    ],
+    [
+      "southwest",
+      "admin_junction"
+    ],
+    [
+      "admin_junction",
+      "engineering_junction"
+    ],
+    [
+      "engineering_junction",
+      "northwest"
+    ],
+    [
+      "northwest",
+      "library_junction"
+    ],
+    [
+      "library_junction",
+      "canteen_junction"
+    ],
+    [
+      "canteen_junction",
+      "northeast"
+    ],
+    [
+      "northeast",
+      "arts_junction"
+    ],
+    [
+      "arts_junction",
+      "southeast"
+    ],
+    [
+      "northeast",
+      "ness_junction"
+    ],
+    [
+      "ness_junction",
+      "ness_door"
+    ],
+    [
+      "library_junction",
+      "library_door"
+    ],
+    [
+      "canteen_junction",
+      "canteen_door"
+    ],
+    [
+      "engineering_junction",
+      "engineering_door"
+    ],
+    [
+      "admin_junction",
+      "admin_turn"
+    ],
+    [
+      "admin_turn",
+      "admin_door"
+    ],
+    [
+      "science_junction",
+      "science_door"
+    ],
+    [
+      "assembly_junction",
+      "assembly_door"
+    ],
+    [
+      "arts_junction",
+      "arts_door"
+    ]
+  ],
+  "buildings": [
+    [
+      "ENGINEERING",
+      25,
+      190,
+      55,
+      280
+    ],
+    [
+      "BOYS HOSTEL",
+      120,
+      65,
+      155,
+      55
+    ],
+    [
+      "GIRLS HOSTEL",
+      290,
+      65,
+      130,
+      55
+    ],
+    [
+      "CANTEEN",
+      440,
+      65,
+      90,
+      70
+    ],
+    [
+      "JUNIOR COLLEGE",
+      545,
+      65,
+      50,
+      75
+    ],
+    [
+      "GIRLS HOSTEL",
+      625,
+      70,
+      80,
+      55
+    ],
+    [
+      "NEVILLE WADIA",
+      720,
+      70,
+      95,
+      55
+    ],
+    [
+      "NESS WADIA",
+      830,
+      65,
+      120,
+      85
+    ],
+    [
+      "OPEN AIR THEATRE",
+      920,
+      170,
+      65,
+      40
+    ],
+    [
+      "WORKSHOP",
+      120,
+      215,
+      55,
+      70
+    ],
+    [
+      "LIBRARY",
+      190,
+      215,
+      135,
+      55
+    ],
+    [
+      "GOLDEN JUBILEE",
+      120,
+      310,
+      55,
+      95
+    ],
+    [
+      "ADMIN",
+      190,
+      435,
+      140,
+      55
+    ],
+    [
+      "MECHANICAL",
+      340,
+      345,
+      45,
+      145
+    ],
+    [
+      "OFFICE",
+      370,
+      220,
+      80,
+      45
+    ],
+    [
+      "SCIENCE",
+      400,
+      290,
+      50,
+      255
+    ],
+    [
+      "GOLDEN JUBILEE",
+      490,
+      220,
+      50,
+      105
+    ],
+    [
+      "ASSEMBLY HALL",
+      490,
+      365,
+      60,
+      170
+    ],
+    [
+      "ARTS / P.G.",
+      555,
+      235,
+      30,
+      310
+    ],
+    [
+      "STAFF QUARTERS",
+      135,
+      505,
+      70,
+      45
+    ],
+    [
+      "BOTANICAL GARDEN",
+      220,
+      505,
+      40,
+      50
+    ],
+    [
+      "PARKING",
+      280,
+      625,
+      150,
+      65
+    ],
+    [
+      "PARKING",
+      510,
+      625,
+      75,
+      65
+    ],
+    [
+      "PAVILION / GYM",
+      835,
+      595,
+      130,
+      65
+    ]
+  ],
+  "stops": [
+    {
+      "name": "Main Gate",
+      "x": 480,
+      "y": 705,
+      "junction": "main_gate"
+    },
+    {
+      "name": "Library",
+      "x": 260,
+      "y": 203,
+      "junction": "library_door"
+    },
+    {
+      "name": "Canteen",
+      "x": 485,
+      "y": 145,
+      "junction": "canteen_door"
+    },
+    {
+      "name": "Arts Building",
+      "x": 595,
+      "y": 460,
+      "junction": "arts_door"
+    },
+    {
+      "name": "Engineering College",
+      "x": 90,
+      "y": 330,
+      "junction": "engineering_door"
+    },
+    {
+      "name": "Admin Building",
+      "x": 180,
+      "y": 460,
+      "junction": "admin_door"
+    },
+    {
+      "name": "Science Building",
+      "x": 425,
+      "y": 560,
+      "junction": "science_door"
+    },
+    {
+      "name": "Ness Wadia College",
+      "x": 880,
+      "y": 160,
+      "junction": "ness_door"
+    },
+    {
+      "name": "Assembly Hall",
+      "x": 520,
+      "y": 552,
+      "junction": "assembly_door"
+    },
+    {
+      "name": "West Gate",
+      "x": 100,
+      "y": 655,
+      "junction": "west_gate"
+    }
+  ],
+  "scale_note": "Original Wadia schematic; distances are illustrative, not surveyed."
+}

@@ -1,5 +1,5 @@
 const $ = id => document.getElementById(id);
-let stops = [], result = null;
+let stops = [], result = null, campus = null, campusMode = true;
 const ns = 'http://www.w3.org/2000/svg';
 function node(tag, attrs, text) {
   const el = document.createElementNS(ns, tag);
@@ -15,6 +15,7 @@ function invalidate() {
 }
 function renderStops() {
   $('stops').replaceChildren();
+  refreshStopOptions();
   stops.forEach((s,i) => {
     const li = document.createElement('li'), number = document.createElement('span');
     number.textContent = String(i).padStart(2,'0');
@@ -28,22 +29,26 @@ function renderStops() {
   });
 }
 function drawMap() {
-  const svg = $('map'); svg.replaceChildren();
-  const px = s => 50+s.x*.98, py = s => 50+s.y*.68;
-  for (let i=0;i<=1000;i+=100) {
-    svg.append(node('line',{x1:50+i*.98,y1:50,x2:50+i*.98,y2:730,stroke:'#d4d4cc'}));
-    svg.append(node('line',{x1:50,y1:50+i*.68,x2:1030,y2:50+i*.68,stroke:'#d4d4cc'}));
-  }
-  svg.append(node('text',{x:50,y:25,'font-family':'monospace','font-size':13},'Y ↓ / X →   COORDINATE GRID IN METRES'));
-  if(result) {
-    const route=result[$('route-view').value].route;
-    svg.append(node('polyline',{points:route.map(i=>`${px(stops[i])},${py(stops[i])}`).join(' '),fill:'none',stroke:'#e61919','stroke-width':4}));
-  }
-  stops.forEach((s,i)=>{
-    svg.append(node(i===0?'rect':'circle',i===0?{x:px(s)-9,y:py(s)-9,width:18,height:18,fill:'#111'}:{cx:px(s),cy:py(s),r:9,fill:'#f4f4f0',stroke:'#111','stroke-width':3}));
-    const right = s.x>820;
-    svg.append(node('text',{x:px(s)+(right?-15:15),y:py(s)-14,'text-anchor':right?'end':'start','font-family':'monospace','font-size':15,'font-weight':700},`${i} / ${s.name}`));
+  const svg=$('map');svg.replaceChildren();svg.setAttribute('viewBox','0 0 1080 800');
+  svg.append(node('image',{href:'/wadia-map.svg?v=roads-5',x:0,y:0,width:1080,height:800}));
+  const point=([x,y])=>`${30+x},${20+y}`;
+  if(result){const route=result[$('route-view').value].route;
+    const points=route.slice(0,-1).flatMap((v,i)=>result.road_paths[`${v}-${route[i+1]}`]);
+    svg.append(node('polyline',{points:points.map(point).join(' '),fill:'none',stroke:'#e61919','stroke-width':4,'stroke-linejoin':'round'}));}
+  stops.forEach((s,i)=>{const x=30+s.x,y=20+s.y;
+    svg.append(node('circle',{cx:x,cy:y,r:10,fill:i===0?'#111':'#f4f4f0',stroke:'#111','stroke-width':2}));
+    svg.append(node('text',{x,y:y+4,'text-anchor':'middle','font-family':'monospace','font-size':11,fill:i===0?'#fff':'#111','font-weight':700},i));});
+}
+function refreshStopOptions() {
+  const select=$('stop-choice');select.replaceChildren();
+  if(!campus)return;
+  campus.stops.forEach((s,i)=>{
+    if(stops.some(v=>v.x===s.x&&v.y===s.y))return;
+    const option=document.createElement('option');option.value=i;option.textContent=s.name;select.append(option);
   });
+  select.disabled=select.options.length===0;
+  $('add-stop').disabled=select.disabled;
+  if(select.disabled){const option=document.createElement('option');option.textContent='All campus stops added';select.append(option);}
 }
 function drawChart() {
   const svg=$('chart'), h=result.history; svg.replaceChildren();
@@ -71,12 +76,16 @@ function showResult() {
   $('legs').replaceChildren();
   for(const leg of result.legs) {const li=document.createElement('li');li.textContent=`${stops[leg.from].name} → ${stops[leg.to].name}: ${leg.distance.toFixed(2)} m`;$('legs').append(li);}
   $('search-note').textContent=`${result.history.length-1} beam iterations; ${result.evaluations} candidate evaluations; stopped because: ${result.stop_reason}. 2-opt accepted ${result.two_opt_history.length} moves.`;
-  $('status').textContent='Round trip ready. Every stop is visited once, then dispatch is revisited.';
+  $('status').textContent='Round trip ready. Every pickup is serviced once; roads may be retraced on the return to dispatch.';
   drawMap(); drawChart();
 }
 async function loadDemo() {
-  try {const response=await fetch('/api/demo');if(!response.ok)throw Error('Could not load campus.');stops=(await response.json()).stops;invalidate();renderStops();drawMap();}
-  catch(e){$('status').textContent=e.message;}
+  try {
+    const response=await fetch('/campus.json',{cache:'no-store'});
+    if(!response.ok)throw Error('Could not load campus.');
+    campus=await response.json();stops=campus.stops.map(s=>({...s}));campusMode=true;
+    invalidate();renderStops();drawMap();$('solve').click();
+  } catch(e){$('status').textContent=e.message;}
 }
 $('demo').onclick=loadDemo;
 $('clear').onclick=()=>{stops=[];invalidate();renderStops();drawMap();};
@@ -85,21 +94,19 @@ for (const key of ['beam','iterations','seed']) $(key).oninput = () => {
   invalidate(); drawMap();
 };
 $('add-form').onsubmit=e=>{
-  e.preventDefault();const s={name:$('name').value.trim(),x:Number($('x').value),y:Number($('y').value)};
-  if(!s.name){$('status').textContent='Enter a stop name.';return;}
-  if(stops.length>=25){$('status').textContent='The planner supports at most 25 stops.';return;}
-  if(stops.some(v=>v.x===s.x&&v.y===s.y)){$('status').textContent='That coordinate already has a stop.';return;}
-  stops.push(s);invalidate();renderStops();drawMap();$('name').value='';
+  e.preventDefault();const selected=campus?.stops[Number($('stop-choice').value)];
+  if(!selected || stops.some(s=>s.x===selected.x&&s.y===selected.y))return;
+  stops.push({...selected});invalidate();renderStops();drawMap();
 };
 $('solve').onclick=async()=>{
   const controls = [...document.querySelectorAll('button,input,select')];
   controls.forEach(el=>el.disabled=true);
   $('status').textContent='Searching candidate tours…';
   try {
-    const response=await fetch('/api/solve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stops,beam:Number($('beam').value),iterations:Number($('iterations').value),seed:Number($('seed').value)})});
+    const response=await fetch('/api/solve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stops,mode:campusMode?"campus":"euclidean",beam:Number($('beam').value),iterations:Number($('iterations').value),seed:Number($('seed').value)})});
     const data=await response.json();if(!response.ok)throw Error(data.error||'Search failed.');result=data;showResult();
   }catch(e){$('status').textContent=e.message;}
-  finally{controls.forEach(el=>el.disabled=false);}
+  finally{controls.forEach(el=>el.disabled=false);refreshStopOptions();}
 };
 $('export').onclick=()=>{
   const url=URL.createObjectURL(new Blob([JSON.stringify(result,null,2)],{type:'application/json'}));

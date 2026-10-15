@@ -4,6 +4,7 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from solver import DEMO, solve
+from indoor import BUILDING, plan
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -15,14 +16,20 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(raw)
 
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-store")
+        super().end_headers()
+
     def do_GET(self):
-        if self.path == "/api/demo":
+        if self.path == "/api/building":
+            self.send_json(200, BUILDING)
+        elif self.path == "/api/demo":
             self.send_json(200, {"stops": DEMO})
         else:
             super().do_GET()
 
     def do_POST(self):
-        if self.path != "/api/solve":
+        if self.path not in ("/api/solve", "/api/indoor") :
             self.send_json(404, {"error": "Unknown endpoint."})
             return
         try:
@@ -30,7 +37,7 @@ class Handler(SimpleHTTPRequestHandler):
             if not 0 < size <= 32768:
                 raise ValueError("Request size must be between 1 and 32768 bytes.")
             data = json.loads(self.rfile.read(size))
-            self.send_json(200, solve(data))
+            self.send_json(200, plan(data) if self.path == "/api/indoor" else solve(data))
         except (ValueError, TypeError, UnicodeError) as error:
             self.send_json(400, {"error": str(error)})
 
